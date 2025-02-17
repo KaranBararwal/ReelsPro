@@ -64,7 +64,6 @@ class ApiClient{
     }
 }
 
-
 // export in this form
 // ek hi object export ho rha hai
 export const apiClient = new ApiClient();
