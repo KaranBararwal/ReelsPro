@@ -1,3 +1,5 @@
+"use client"
+
 import { apiClient } from "@/lib/api-client";
 import { IVideo } from "@/models/Video";
 import { useEffect, useState } from "react";
