@@ -42,8 +42,9 @@ export default function Header()  {
                     <div className="dropdown dropdown-end">
                         <div
                             tabIndex={0}
-                            role='button'
-                            className='btn btn-ghost btn-circle'
+                            role="button"
+                            className="btn btn-ghost btn-circle"
+                            aria-label='User Profile'
                         >
                             <User className='w-5 h-5'/>
                         </div>
@@ -60,7 +61,11 @@ export default function Header()  {
                                             {session.user?.email?.split("@")[0]}
                                         </span>
                                     </li>
+
+                                    {/* wraped the div inside the li */}
+                                    <li>
                                     <div className='divider my-1'></div>
+                                    </li>
 
                                     <li>
                                         <Link

@@ -3,6 +3,7 @@
 // import React from "react";
 import { ImageKitProvider } from "imagekitio-next";
 import {SessionProvider} from "next-auth/react" 
+import { NotificationProvider } from "./Notification";
 
 const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
 const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY;
@@ -30,13 +31,18 @@ export default function Providers({children} : {children :React.ReactNode}) {
       };
 
   return (
-      <SessionProvider>   
+      <SessionProvider refetchInterval={5 * 60}>   
+      <NotificationProvider>
     {/*  wrap all this in session Provider */}
-    <ImageKitProvider urlEndpoint={urlEndpoint} publicKey={publicKey} authenticator={authenticator}>
+    <ImageKitProvider 
+    urlEndpoint={urlEndpoint}
+     publicKey={publicKey}
+      authenticator={authenticator}
+      >
         {/* ...client side upload component goes here */}
-
         {children}
       </ImageKitProvider>
+      </NotificationProvider>
     {/* //   ...other SDK components added previously */}
     </SessionProvider>
   );
