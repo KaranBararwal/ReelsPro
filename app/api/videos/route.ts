@@ -2,15 +2,18 @@ import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import Video, { IVideo } from "@/models/Video";
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest , NextResponse } from "next/server";
 import mongoose from "mongoose";
+
 export async function GET() {
     try {
 
         // check user session
         const session = await getServerSession(authOptions);
-        console.log("Session Data: GET" , session);
-        if(!session){
+
+        // console.log("Session Data: GET" , session);  // debuging 
+
+        if(!session || !session.user){
             return NextResponse.json({error : "Unauthorized" } , {status : 401});
         }
 
@@ -49,9 +52,9 @@ export async function GET() {
 
 
 // for uploading the videos
-export async function POST(request : NextResponse){
+// export async function POST(request : NextResponse){
+export async function POST(request : NextRequest){
     try {
-
         // check the session of user
         const session = await getServerSession(authOptions)
 
@@ -93,7 +96,8 @@ export async function POST(request : NextResponse){
         return NextResponse.json(newVideo)
 
 
-    } catch  {
+    } catch(error){
+        console.log(error)
         return NextResponse.json(
             {error : "Failed to create a video"},
             {status : 500}
