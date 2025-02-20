@@ -10,7 +10,6 @@ import FileUpload from "./FileUpload";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-
 interface VideoData {
     title : string;
     description : string;
@@ -24,7 +23,7 @@ interface VideoData {
 
 export default function VideoFormData(){
     const router = useRouter(); // ✅ Hook called at top level
-    
+
     const [loading, setLoading] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
     const { showNotification } =  useNotification();
