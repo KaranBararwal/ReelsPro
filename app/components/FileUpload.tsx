@@ -1,4 +1,5 @@
 "use client";
+
 import  { useState } from "react";
 import { IKUpload } from "imagekitio-next";
 import { Loader2 } from "lucide-react"
@@ -17,7 +18,6 @@ export default function FileUpload({
     fileType = "image" 
 } : FileUploadProps) {  // defining the type that we have already declare (cuz of TS)
   
-  // const ikUploadRefTest = useRef(null); 
 
   const [uploading , setUploading] = useState(false)
   const [error , setError] = useState<string | null> (null)
@@ -42,24 +42,28 @@ const onError = (err : {message : string}) => {
     setError(null)
   };
   
-  const handleProgress = (evt : ProgressEvent) => {
-    console.log("Start", evt);
-    if(evt.lengthComputable && onProgress){
-      const percentComplete = (evt.loaded / evt.total) * 100;
-      onProgress(Math.round(percentComplete));
-    }
-  };
+  // const handleProgress = (evt : ProgressEvent) => {
 
-  // const handleStartUpload = (evt : ChangeEvent<HTMLInputElement>) => {
   //   console.log("Start", evt);
-  //   const file = evt.target.files?.[0]
-
-  //   if(file && onProgress){
-  //     onProgress(0); // unload just started set it to 0
-  //   }
+  //   if(evt.lengthComputable && onProgress){
+  //     const percentComplete = (evt.loaded / evt.total) * 100;
+  //     onProgress(Math.round(percentComplete));
   //   }
   // };
-  
+ 
+
+  const handleProgress = (evt: ProgressEvent) => {
+    console.log("Progress Event Triggered:", evt);  // Debug log
+    if (evt.lengthComputable && onProgress) {
+        const percentComplete = (evt.loaded / evt.total) * 100;
+
+        setUploading(true)  // it is callback so it should return a 
+        console.log("Upload Progress:", percentComplete);  // Debug log
+
+        onProgress(Math.round(percentComplete));
+    }
+};
+
 
   // here we are defining a  seprate method for file upload
   const validateFile = (file : File) => {
@@ -87,7 +91,7 @@ const onError = (err : {message : string}) => {
         return false
       }
     }
-    return false
+    return true; // return true when valid
   }
 
 
@@ -113,8 +117,8 @@ const onError = (err : {message : string}) => {
         {
           uploading && (
             <div className="flex items-center gap-2 text-sm text-primary">
-              <Loader2 className="amimate-spin w-4 h-4"/>
-              <span>Uplaoding...</span>
+              <Loader2 className="animate-spin w-4 h-4"/>
+              <span>Uploading...</span>
             </div>
           )
         }

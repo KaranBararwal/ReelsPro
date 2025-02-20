@@ -11,7 +11,7 @@ export default function VideoComponent({ video } : {video : IVideo}){
                     className="rounded-xl overflow-hidden relative w-full"   
                     style={{aspectRatio : "9/16"}}
                 >
-                    <IKVideo 
+                    {/* <IKVideo 
                         path={video.videoUrl}
                         transformation={[
                             {
@@ -21,7 +21,29 @@ export default function VideoComponent({ video } : {video : IVideo}){
                         ]}
                         controls = {video.controls}
                         className="w-full h-full object-cover"
+                    /> */}
+
+                    {/* <IKVideo 
+                        path={video.videoUrl}
+                        controls={video.controls}
+                        className="w-full h-full object-cover"
+                    /> */}
+
+                    <IKVideo 
+                        path={video.videoUrl.replace("https://ik.imagekit.io/karanbararwal/", "")} 
+                        controls={video.controls}
+                        transformation={[
+                            {
+                                height : "720",
+                                width : "405",
+                                quality : "80",
+                                // crop : "maintain_ratio",
+                            },
+                        ]}
+                        className="w-full h-full object-cover rounded-lg shadow-lg"
                     />
+
+
                 </div>
                 </Link> 
             </figure>

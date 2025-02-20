@@ -11,6 +11,7 @@ export interface IVideo {
     description : string;
     videoUrl : string;
     thumbnailUrl : string;
+    userId : string;
     controls? : boolean;
     transformation? : {
         height : number;
@@ -23,7 +24,8 @@ export interface IVideo {
 
 const videoSchema = new Schema<IVideo> (
     {
-        title : {type : String , required : true},
+        userId: { type: String , required: true }, // 👈 Add this        title : {type : String , required : true},
+        // userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // 👈 Add this        title : {type : String , required : true},
         description : {type : String , required : true},
         videoUrl : {type : String , required : true},
         thumbnailUrl : {type : String , required : true},

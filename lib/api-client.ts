@@ -57,9 +57,22 @@ class ApiClient{
     }
 
     async createVideo(videoData : VideoFormData){
-        return this.fetch<IVideo>("/vidoes" , {
+        // fetch user session to get the user id
+        const response = await fetch("/api/auth/session");
+        const session = await response.json();
+
+        if(!session || !session.user){
+            throw new Error("User session not found")
+        }
+
+        const videoWithUserId = {
+            ...videoData,
+            userId : session.user.id , // include user id in request body
+        };
+
+        return this.fetch<IVideo>("/videos" , {
             method : "POST", // overwrite the GET method to the POST
-            body : videoData,
+            body : videoWithUserId,
         });
     }
 }
