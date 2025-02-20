@@ -28,7 +28,8 @@ export default function VideoFormData(){
     const [uploadProgress, setUploadProgress] = useState(0)
     const { showNotification } =  useNotification();
 
-    const {data : session , status} = useSession(); // get session from nextAuth
+    // const {data : session , status} = useSession(); // get session from nextAuth
+    const {data : session} = useSession(); // get session from nextAuth
 
     const {
         register,

@@ -7,7 +7,8 @@ export type VideoFormData = Omit<IVideo , "_id">;
 // defining the type for the options 
 type FetchOptions = {
     method? : "GET" | "POST" | "PUT" | "DELETE";  
-    body?: any;
+    body?: unknown;
+    // body?: any;
     headers? : Record <string , string> ;
 };
 
