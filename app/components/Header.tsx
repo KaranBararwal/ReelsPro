@@ -56,6 +56,8 @@ export default function Header()  {
 
                             {session ? (
                                 <>
+
+                                {/* username */}
                                     <li className='px-4 py-1'>
                                         <span className='text-sm opacity-70'>
                                             {session.user?.email?.split("@")[0]}
@@ -67,6 +69,19 @@ export default function Header()  {
                                     <div className='divider my-1'></div>
                                     </li>
 
+                                    {/* User Profile Link */}
+                                    <li>
+                                        <Link
+                                            href="/profile"
+                                            className="px-4 py-2 hover:bg-base-200 block w-full"
+                                            onClick={() => showNotification("Viewing your profile", "info")}
+                                        >
+                                            User Profile
+                                        </Link>
+                                    </li>
+
+
+                                    {/* video upload link */}
                                     <li>
                                         <Link
                                             href="/upload"
