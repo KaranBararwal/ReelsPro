@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { NextRequest , NextResponse } from "next/server";
 import mongoose from "mongoose";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
 
         // check user session
@@ -20,6 +20,16 @@ export async function GET() {
         // connecting to the database
         await connectToDatabase()
 
+        // parsing the query param
+        const { searchParams } = new URL(request.url);
+        const userOnly = searchParams.get("userOnly") === "true";
+
+        let videos;
+
+
+        if(userOnly){
+            // fetch only the user's videos
+        
         // for only that user
         // const videos = await Video.find({userId : session.user.id })
         //     .sort({createdAt : -1})
@@ -27,14 +37,18 @@ export async function GET() {
 
 
         // maybe we need to change string to object
-        const videos = await Video.find({
+                videos = await Video.find({
             userId: new mongoose.Types.ObjectId(session.user.id)
         }).sort({ createdAt: -1 }).lean();
+    } else{
+        // fetch all the videos
+         videos = await Video.find({}).sort({createdAt : -1}).lean()  // in reverse order of created At
 
-        
-
+    }
+    
         // const videos = await Video.find({}).sort({createdAt : -1}).lean()  // in reverse order of created At
-        console.log("Session User ID:", session?.user?.id);
+
+        // console.log("Session User ID:", session?.user?.id);
         // if there are no vidoes uploaded
         if(!videos || videos.length === 0){
             return NextResponse.json([] , {status : 200})

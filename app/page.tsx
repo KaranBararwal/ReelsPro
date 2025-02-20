@@ -17,7 +17,9 @@ export default function Home() {
     const fetchVideos = async () => {
       try {
         // this is how we use the api - client
-        const data = await apiClient.getVideos()
+
+        // fetch all the videos by passing userOnly=false
+        const data = await apiClient.getVideos(false)
         console.log("Fetched Videos:", data); // 🔹 Debugging
         setVideos(data)
       } catch (error) {

@@ -26,7 +26,9 @@ export default function UserProfile() {
         const fetchVideos = async () => {
             try {
                 if (status === "authenticated" && session?.user) {
-                    const data = await apiClient.getVideos();
+                    
+                    // userOnly is true for this
+                    const data = await apiClient.getVideos(true);
                     console.log("Fetched Videos:", data); // Debugging
                     setVideos(data);
                 }

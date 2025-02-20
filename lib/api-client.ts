@@ -49,9 +49,14 @@ class ApiClient{
 
 
     // now we are defining some different methods
-    async getVideos(){
-        return this.fetch<IVideo[]>("/videos"); // type is videos array
-    }
+    // async getVideos(userOnly : boolean ){
+    //     if(!userOnly)  return this.fetch<IVideo[]>("/videos"); // type is videos array
+    //     return this.fetch<IVideo[]>("/videos?userOnly=true")
+    // }
+    async getVideos(userOnly: boolean = false) {
+        return this.fetch<IVideo[]>(`/videos${userOnly ? "?userOnly=true" : ""}`);
+      }
+      
 
     async getAVideo(id : string){
         return this.fetch<IVideo>(`/videos/${id}`);
