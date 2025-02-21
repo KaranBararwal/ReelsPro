@@ -5,6 +5,18 @@ import { getServerSession } from "next-auth";
 import { NextRequest , NextResponse } from "next/server";
 import mongoose from "mongoose";
 
+// Common CORS Headers
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",  // Or set to your domain for more security
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
+
+  // Handle Preflight OPTIONS Request
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders });
+  }
+
 export async function GET(request: NextRequest) {
     try {
 
@@ -14,7 +26,7 @@ export async function GET(request: NextRequest) {
         // console.log("Session Data: GET" , session);  // debuging 
 
         if(!session || !session.user){
-            return NextResponse.json({error : "Unauthorized" } , {status : 401});
+            return NextResponse.json({error : "Unauthorized" } , {status : 401 , headers : corsHeaders});
         }
 
         // connecting to the database
@@ -51,15 +63,15 @@ export async function GET(request: NextRequest) {
         // console.log("Session User ID:", session?.user?.id);
         // if there are no vidoes uploaded
         if(!videos || videos.length === 0){
-            return NextResponse.json([] , {status : 200})
+            return NextResponse.json([] , {status : 200 , headers : corsHeaders})
         }
 
         // otherwise return the videos
-        return NextResponse.json(videos)
+        return NextResponse.json(videos , {headers : corsHeaders});
     } catch  {
         return NextResponse.json(
             {error : "Failed to fetch the videos"},
-            {status : 200}
+            {status : 200 , headers : corsHeaders}
         )
     }
 }
@@ -75,7 +87,7 @@ export async function POST(request : NextRequest){
         if(!session || !session.user){    // modified
             return NextResponse.json(
                 {error : "Unauthorized"},
-                {status : 401}
+                {status : 401 , headers : corsHeaders}
             )
         }
 
@@ -91,7 +103,7 @@ export async function POST(request : NextRequest){
         ){
             return NextResponse.json(
                 {error : "Missing required fields"},
-                {status : 400}
+                {status : 400 , headers : corsHeaders}
             );
         }
 
@@ -107,14 +119,14 @@ export async function POST(request : NextRequest){
         }
 
         const newVideo = await Video.create(videoData)
-        return NextResponse.json(newVideo)
+        return NextResponse.json(newVideo , {headers : corsHeaders})
 
 
     } catch(error){
         console.log(error)
         return NextResponse.json(
             {error : "Failed to create a video"},
-            {status : 500}
+            {status : 500 , headers : corsHeaders}
         );
     }
 }

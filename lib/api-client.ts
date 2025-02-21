@@ -13,7 +13,8 @@ type FetchOptions = {
 };
 
 //using environment variable for base URL in production or localhost during development
-const BASE_URL = process.env.NEXT_PUBLIC_API_URI || "http://localhost:3000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URI || "";
+// const BASE_URL = process.env.NEXT_PUBLIC_API_URI || "http://localhost:3000";
 
 class ApiClient{
 
@@ -37,7 +38,7 @@ class ApiClient{
         // const response = await fetch(`/api${endpoint}`, {
 
         // use absolute URL for both local and deployed environments
-        const response = await fetch(`${BASE_URL}/api/videos` , {
+        const response = await fetch(`${BASE_URL}/api${endpoint}` , {
             // giving the default values to the response
             method,
             headers : defaultHeaders,
