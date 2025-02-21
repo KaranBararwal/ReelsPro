@@ -11,6 +11,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  
+  async rewrites() {
+    return [
+      {
+        source: "/videos",
+        destination: "/api/videos",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
