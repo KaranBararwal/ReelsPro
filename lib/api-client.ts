@@ -37,7 +37,7 @@ class ApiClient{
         // const response = await fetch(`/api${endpoint}`, {
 
         // use absolute URL for both local and deployed environments
-        const response = await fetch(`${BASE_URL}/api${endpoint}` , {
+        const response = await fetch(`${BASE_URL}/api/videos` , {
             // giving the default values to the response
             method,
             headers : defaultHeaders,
