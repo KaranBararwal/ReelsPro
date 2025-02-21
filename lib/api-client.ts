@@ -59,9 +59,19 @@ class ApiClient{
       }
       
 
-    async getAVideo(id : string){
-        return this.fetch<IVideo>(`/videos/${id}`);
-    }
+    // async getAVideo(id : string){
+    //     return this.fetch<IVideo>(`/videos/${id}`);
+    // }
+
+    async getAVideo(id: string) {
+        try {
+          const video = await this.fetch<IVideo>(`/videos/${id}`);
+          return video;
+        } catch (error) {
+          console.error("Error fetching video:", error);
+          throw new Error("Failed to fetch the video. Please try again.");
+        }
+      }
 
     async createVideo(videoData : VideoFormData){
         // fetch user session to get the user id
