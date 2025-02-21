@@ -12,7 +12,12 @@ type FetchOptions = {
     headers? : Record <string , string> ;
 };
 
+//using environment variable for base URL in production or localhost during development
+const BASE_URL = process.env.NEXT_PUBLIC_API_URI || "http://localhost:3000";
+
 class ApiClient{
+
+    // generalized fetch method
     private async fetch<T> (  // default datatype in typescript is T
         endpoint : string , 
         options : FetchOptions = {} // default value is null
@@ -29,8 +34,10 @@ class ApiClient{
 
 
         // javascipt fetch and the path should be for fetch starts with / cuz we don't have given it here
-        const response = await fetch(`/api${endpoint}`, {
+        // const response = await fetch(`/api${endpoint}`, {
 
+        // use absolute URL for both local and deployed environments
+        const response = await fetch(`${BASE_URL}/api${endpoint}` , {
             // giving the default values to the response
             method,
             headers : defaultHeaders,
