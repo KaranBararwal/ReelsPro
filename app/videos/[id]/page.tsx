@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 // import { useRouter, useSearchParams } from "next/navigation";
-import {  useParams, useSearchParams } from "next/navigation";
+import {  useParams } from "next/navigation";
 import { IVideo } from "@/models/Video";
 import { apiClient } from "@/lib/api-client";
 
