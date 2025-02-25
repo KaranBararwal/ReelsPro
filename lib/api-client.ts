@@ -2,7 +2,6 @@
 
 import { IVideo } from "@/models/Video";
 
-
 export type VideoFormData = Omit<IVideo , "_id">;
 // defining the type for the options 
 type FetchOptions = {
@@ -38,6 +37,9 @@ class ApiClient{
         // const response = await fetch(`/api${endpoint}`, {
 
         // use absolute URL for both local and deployed environments
+        console.log("BASE_URL:", BASE_URL);
+        console.log("Fetching:", `${BASE_URL}/api${endpoint}`);
+
         const response = await fetch(`${BASE_URL}/api${endpoint}` , {
             // giving the default values to the response
             method,
