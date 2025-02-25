@@ -17,7 +17,7 @@ export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest) {
   try {
     // Authenticate user session
     const session = await getServerSession(authOptions);
@@ -28,7 +28,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     // Connect to MongoDB
     await connectToDatabase();
 
-    const { id } = params;
+    const url = new URL(request.url);
+    const pathSegments = url.pathname.split("/");
+    const id  = pathSegments[pathSegments.length-1];
+    
 
     // Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
