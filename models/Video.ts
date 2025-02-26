@@ -18,8 +18,10 @@ export interface IVideo {
         width : number;
         quality? : number;
     };
-    // createdAt? : Date;
-    // updatedAt? : Date;
+    likeCount? : number;
+    // likedUsers? : mongoose.Types.ObjectId[];// array of user IDs who liked the video
+    likedUsers?: string[];
+
 }
 
 const videoSchema = new Schema<IVideo> (
@@ -35,6 +37,9 @@ const videoSchema = new Schema<IVideo> (
             width : {type : Number , default : VIDEO_DIMENSIONS.width},
             quality : {type : Number , min : 1 , max : 100},
         },
+        likeCount : {type : Number , default : 0},  
+        // likedUsers : [{type : mongoose.Schema.Types.ObjectId , ref : "User"}]  // track users who liked
+        likedUsers : {type : [String] , default : []},
     },
     {timestamps : true}
 );
