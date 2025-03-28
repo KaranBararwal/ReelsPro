@@ -1,0 +1,23 @@
+def findShortestSubstring(s):
+    n = len(s)
+    # If already all distinct, no need to remove anything
+    if len(set(s)) == n:
+        return 0
+    
+    # Check all lengths from 1..n
+    for size in range(1, n + 1):
+        # Slide a window of length `size` across the string
+        for start in range(n - size + 1):
+            end = start + size  # window to remove is s[start:end]
+            # Build the remainder
+            remainder = s[:start] + s[end:]
+            # Check if remainder has all distinct characters
+            if len(set(remainder)) == len(remainder):
+                return size
+    
+    # Worst case: removing the entire string
+    return n
+
+if __name__ == '__main__':
+    s = input().strip()   
+    print(findShortestSubstring(s))

@@ -13,6 +13,9 @@ export default function VideoComponent({ video , userId } : VideoProps){
     // local state for like status and count
     const [liked, setLiked] = useState(false)
     const [likeCount, setLikeCount] = useState<number>(video.likeCount || 0);
+    const [comments , setComments] = useState<{text : string}[]>([]);
+    const [newComment , setNewComment] = useState("");
+
 
     // fetch initial like count when component mounts
     useEffect(() => {
@@ -70,13 +73,59 @@ export default function VideoComponent({ video , userId } : VideoProps){
             }
         };
 
+
+        // fetch comments 
+    useEffect(() => {
+        // fetch comments when component loads
+        const fetchComments = async () => {
+        try {
+            const response = await fetch(`/api/videos/${video._id}/comment`);
+            const data = await response.json();
+            setComments(data.comments || []);
+        } catch (error) {
+            console.error("Error fetching comments:" , error)
+        }
+      };
+
+    fetchComments();
+
+    }, [video._id]);
+
+
+    // Handle adding a comment
+    const handleAddComment = async () => {
+        if(!userId || !newComment.trim()) return ;
+
+        try {
+            console.log("Sending comment request for video ID:", video._id);
+            console.log("User ID:", userId);
+            console.log("Comment:", newComment);
+            const response = await fetch(`/api/videos/${video._id}/comment` , {
+                method : "POST",
+                headers : {"Content-Type" : "application/json"},
+                // body : JSON.stringify({userId , text : newComment}),
+                body : JSON.stringify({userId , comment : newComment}),  
+            });
+
+            const data = await response.json();
+            if(response.ok){
+                setComments(data.comments);
+                setNewComment("");   // clear input field
+            }
+        } catch (error) {
+            console.error("Error adding comment" , error);
+        }
+    };
+    
+
     return (
         <div className="card bg-base-100 shadow hover:shadow-lg transition-all duration-300">
             <figure className="relative px-4 pt-4">
                 <Link href={`/videos/${video._id}`} className="relative group w-full">
+
+                {/* this is the part where video sizing issue is coming */}
                 <div 
-                    className="rounded-xl overflow-hidden relative w-full"   
-                    style={{aspectRatio : "9/16"}}
+                    className="rounded-xl overflow-hidden relative w-full aspect-ratio-9-16"
                 >
                     <IKVideo 
                         path={video.videoUrl.replace("https://ik.imagekit.io/karanbararwal/", "")} 
@@ -135,6 +184,34 @@ export default function VideoComponent({ video , userId } : VideoProps){
                 </span>
             </div>
 
+                        {/* Comment Section */}
+                    <div className="mt-4">
+                        <h3 className="text-md font-semibold" >Comments</h3>
+                        <ul className="mt-2 space-y-2">
+                            {comments.map((comment , index) => (
+                                <li key={index} className="text-sm bg-purple-300 p-2 rounded-md">
+                                    {comment.text}
+                                </li>
+                            ))}
+                        </ul>
+
+                        <div className="mt-3 flex items-center space-x-2">
+                            <input 
+                                type="text"
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                placeholder="Drop a comment..."
+                                className="flex-1 p-2 border rounded-md"
+                                 />
+
+                            <button
+                                onClick={handleAddComment}
+                                className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                                >
+                                    POST
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -5,6 +5,12 @@ export const VIDEO_DIMENSIONS = {
     height : 1920,
 } as const;
 
+export interface IComment{
+    userId : string,
+    text : string,
+    createdAt? : Date;
+}
+
 export interface IVideo {
     _id? : mongoose.Types.ObjectId;
     title : string;
@@ -21,8 +27,17 @@ export interface IVideo {
     likeCount? : number;
     // likedUsers? : mongoose.Types.ObjectId[];// array of user IDs who liked the video
     likedUsers?: string[];
-
+    comments? : IComment[];
 }
+
+const commentSchema = new Schema<IComment> (
+    {
+        userId : {type : String , required : true},
+        text : {type : String , required : true},
+        createdAt : {type : Date , default : Date.now},
+    },
+    {_id : false} // no separate _id for each comment
+)
 
 const videoSchema = new Schema<IVideo> (
     {
@@ -40,6 +55,7 @@ const videoSchema = new Schema<IVideo> (
         likeCount : {type : Number , default : 0},  
         // likedUsers : [{type : mongoose.Schema.Types.ObjectId , ref : "User"}]  // track users who liked
         likedUsers : {type : [String] , default : []},
+        comments : {type : [commentSchema] , default : []},
     },
     {timestamps : true}
 );
