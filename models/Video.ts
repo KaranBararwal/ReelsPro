@@ -33,6 +33,8 @@ export interface IVideo {
 
 const commentSchema = new Schema<IComment> (
     {
+        // Fix: Explicitly add _id field to commentSchema
+        _id: { type: mongoose.Schema.Types.ObjectId, default: () => new mongoose.Types.ObjectId() }, // ✅ Add this
         userId : {type : String , required : true},
         text : {type : String , required : true},
         createdAt : {type : Date , default : Date.now},
