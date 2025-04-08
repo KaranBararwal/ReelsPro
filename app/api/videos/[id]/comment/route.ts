@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     const paths = url.pathname.split("/"); // Extract video ID from URL
     const id = paths[paths.length - 2];
 
-    console.log("Extracted ID:", id);
+    // console.log("Extracted ID:", id);
  
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return NextResponse.json({ error: "Invalid video ID" }, { status: 400 });
@@ -29,7 +29,17 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: "Video not found" }, { status: 404 });
         }
 
-        return NextResponse.json({ comments: video.comments }, { status: 200 });
+        // return NextResponse.json({ comments: video.comments }, { status: 200 });
+
+        return NextResponse.json({
+            comments: video.comments.map((c: IComment) => ({
+                _id: c._id,  // ✅ Ensure _id is included
+                userId: c.userId,
+                text: c.text,
+                createdAt: c.createdAt,
+            }))
+        }, { status: 200 });
+        
     } catch (error) {
         console.error("Error fetching comments:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
@@ -83,8 +93,14 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ 
             message : "Comment added successfully" ,
-            comments: video.comments.map((c : IComment) => c) 
+            comments: video.comments.map((c : IComment) => ({
+                _id : c._id,
+                userId : c.userId,
+                text : c.text,
+                createdAt : c.createdAt,
+            })) 
         }  , { status: 200 });
+
     } catch (error) {
         console.error("Error adding comment:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

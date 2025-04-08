@@ -2,18 +2,26 @@ import { IKVideo } from "imagekitio-next";
 import Link from "next/link";
 import { IVideo } from "@/models/Video";
 import { useEffect, useState } from "react";
-import { FaHeart } from "react-icons/fa"
+import { FaHeart , FaTrash } from "react-icons/fa";
 
 interface VideoProps {
     video : IVideo;
     userId? : string; // pass the logged in user id
 }
 
+interface Comment {
+    _id: string;
+    userId: string;
+    text: string;
+    createdAt?: string;
+}
+
+
 export default function VideoComponent({ video , userId } : VideoProps){
     // local state for like status and count
     const [liked, setLiked] = useState(false)
     const [likeCount, setLikeCount] = useState<number>(video.likeCount || 0);
-    const [comments , setComments] = useState<{text : string}[]>([]);
+    const [comments , setComments] = useState<Comment[]>([]);
     const [newComment , setNewComment] = useState("");
 
 
@@ -116,6 +124,23 @@ export default function VideoComponent({ video , userId } : VideoProps){
             console.error("Error adding comment" , error);
         }
     };
+
+    // handle deleting a comment
+    const handleDeleteComment = async (commentId : string) => {
+        if(!userId) return;
+
+        try {
+            const response = await fetch(`/api/videos/${video._id}/comment/${commentId}` , {
+                method : "DELETE",
+            });
+
+            if(response.ok){
+                setComments((prev) => prev.filter((comment) => comment._id !== commentId))
+            }
+        } catch (error) {
+            console.error("Error deleting comment: ", error);
+        }
+    }
     
 
     return (
@@ -188,9 +213,25 @@ export default function VideoComponent({ video , userId } : VideoProps){
                     <div className="mt-4">
                         <h3 className="text-md font-semibold" >Comments</h3>
                         <ul className="mt-2 space-y-2">
-                            {comments.map((comment , index) => (
-                                <li key={index} className="text-sm bg-purple-300 p-2 rounded-md">
-                                    {comment.text}
+                            {comments.map((comment) => (
+                                <li key={comment._id} className="flex justify-between items-center text-sm bg-purple-300 p-2 rounded-md">
+                                    <span>{comment.text}</span>
+                                    { userId && comment.userId  && comment.userId === userId && (
+                                        <button
+                                            onClick={() => {
+                                                console.log("Deleting comment with ID:" , comment._id); // debug log
+                                                if(!comment._id){
+                                                    alert("Comment ID is missing!");
+                                                    return;
+                                                }
+                                                handleDeleteComment(comment._id);
+                                            }}
+                                            className="text-red-500 hover:text-red-700 transition"
+                                            aria-label="Delete comment"
+                                        >
+                                            <FaTrash/>
+                                        </button>
+                                    )}
                                 </li>
                             ))}
                         </ul>

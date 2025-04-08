@@ -6,6 +6,7 @@ export const VIDEO_DIMENSIONS = {
 } as const;
 
 export interface IComment{
+    _id : mongoose.Types.ObjectId; // for delete button we have to add this line
     userId : string,
     text : string,
     createdAt? : Date;
@@ -35,9 +36,9 @@ const commentSchema = new Schema<IComment> (
         userId : {type : String , required : true},
         text : {type : String , required : true},
         createdAt : {type : Date , default : Date.now},
-    },
-    {_id : false} // no separate _id for each comment
-)
+    }
+    // {_id : false} // no separate _id for each comment
+);
 
 const videoSchema = new Schema<IVideo> (
     {
