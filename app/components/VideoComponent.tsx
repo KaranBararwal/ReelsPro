@@ -2,7 +2,7 @@ import { IKVideo } from "imagekitio-next";
 import Link from "next/link";
 import { IVideo } from "@/models/Video";
 import { useEffect, useState } from "react";
-import { FaHeart , FaTrash } from "react-icons/fa";
+import { FaHeart , FaTrash , FaEdit , FaSave , FaTimes} from "react-icons/fa";
 
 interface VideoProps {
     video : IVideo;
@@ -23,12 +23,14 @@ export default function VideoComponent({ video , userId } : VideoProps){
     const [likeCount, setLikeCount] = useState<number>(video.likeCount || 0);
     const [comments , setComments] = useState<Comment[]>([]);
     const [newComment , setNewComment] = useState("");
+    const [editingCommentId , setEditingCommentId] = useState<string | null>(null);
+    const [editedText , setEditedText] = useState<string>("");
 
 
     // fetch initial like count when component mounts
     useEffect(() => {
-        console.log("User ID received in VideoComponent:", userId); // Debug userId
-        console.log("Fetching likes for video ID:", video._id);
+        // console.log("User ID received in VideoComponent:", userId); // Debug userId
+        // console.log("Fetching likes for video ID:", video._id);
 
 
         const fetchLikes = async () => {
@@ -36,7 +38,7 @@ export default function VideoComponent({ video , userId } : VideoProps){
                 const response = await fetch(`/api/videos/${video._id}/like`); // from like
 
                 const data = await response.json();
-                console.log("Fetch likes API response : " , data); // debugging
+                // console.log("Fetch likes API response : " , data); // debugging
 
                 if(response.ok){
                     // const data = await response.json();
@@ -59,7 +61,7 @@ export default function VideoComponent({ video , userId } : VideoProps){
             }
         
             try {
-                console.log("Sending userId" , userId); // debug code 
+                // console.log("Sending userId" , userId); // debug code 
 
                 const response = await fetch(`/api/videos/${video._id}/like`, {
                     method: "POST",
@@ -68,7 +70,7 @@ export default function VideoComponent({ video , userId } : VideoProps){
                 });
 
                 const data = await response.json();
-                console.log("Like API response : " , data); // debugging
+                // console.log("Like API response : " , data); // debugging
     
                 if (response.ok) {
                     // const data = await response.json();
@@ -141,6 +143,40 @@ export default function VideoComponent({ video , userId } : VideoProps){
             console.error("Error deleting comment: ", error);
         }
     }
+
+    // handle deleting a comment
+    const handleEditComment = async (videoId : string , commentId : string , newText : string) => {
+        try {
+            const res = await fetch(`/api/videos/${videoId}/comment/${commentId}` , {
+                method : "PATCH",
+                headers : {
+                    "Content-Type" : "application/json",
+                },
+                body : JSON.stringify({ newText }),
+            });
+
+            const data = await res.json();
+
+            if(res.ok){
+                console.log("Comment updated : " , data.updatedComment);
+                // refresh local state
+                const updatedComments = comments.map((comment) => 
+                    comment._id === commentId ? { ...comment , text : newText} : comment
+                );
+
+                setComments(updatedComments);
+
+                // exit edit mode
+                setEditingCommentId(null);
+                setEditedText("");
+            }
+            else{
+                console.error("Error editing comment:" , data.error);
+            }
+        } catch (error) {
+            console.error("Error:" , error);
+        }
+    }
     
 
     return (
@@ -209,47 +245,88 @@ export default function VideoComponent({ video , userId } : VideoProps){
                 </span>
             </div>
 
-                        {/* Comment Section */}
-                    <div className="mt-4">
-                        <h3 className="text-md font-semibold" >Comments</h3>
-                        <ul className="mt-2 space-y-2">
-                            {comments.map((comment) => (
-                                <li key={comment._id} className="flex justify-between items-center text-sm bg-purple-300 p-2 rounded-md">
-                                    <span>{comment.text}</span>
-                                    { userId && comment.userId  && comment.userId === userId && (
-                                        <button
-                                            onClick={() => {
-                                                console.log("Deleting comment with ID:" , comment._id); // debug log
-                                                if(!comment._id){
-                                                    alert("Comment ID is missing!");
-                                                    return;
-                                                }
-                                                handleDeleteComment(comment._id);
-                                            }}
-                                            className="text-red-500 hover:text-red-700 transition"
-                                            aria-label="Delete comment"
-                                        >
-                                            <FaTrash/>
-                                        </button>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
+                {/* Comment Section */}
+                <div className="mt-4">
+                    <h3 className="text-md font-semibold">Comments</h3>
+                    <ul className="mt-2 space-y-2">
+                        {comments.map((comment) => (
+                            <li
+                                key={comment._id}
+                                className="flex justify-between items-center text-sm bg-purple-300 p-2 rounded-md"
+                            >
+                                {/* Check if the comment is being edited */}
+                                {editingCommentId === comment._id ? (
+                                    <input
+                                        value={editedText}
+                                        onChange={(e) => setEditedText(e.target.value)}
+                                        className="flex-1 p-1 mr-2 rounded-md border"
+                                    />
+                                ) : (
+                                    <span className="flex-1 mr-2">{comment.text}</span>
+                                )}
 
-                        <div className="mt-3 flex items-center space-x-2">
-                            <input 
-                                type="text"
-                                value={newComment}
-                                onChange={(e) => setNewComment(e.target.value)}
-                                placeholder="Drop a comment..."
-                                className="flex-1 p-2 border rounded-md"
-                                 />
+                                {userId && comment.userId && comment.userId === userId && (
+                                    <div className="flex space-x-2">
+                                        {editingCommentId === comment._id ? (
+                                            <>
+                                                <button
+                                                    onClick={() =>
+                                                        handleEditComment(video._id?.toString() || "" , comment._id.toString(), editedText)
+                                                    }
+                                                    className="text-green-600 hover:text-green-800"
+                                                    title="Save"
+                                                >
+                                                    <FaSave />
+                                                </button>
+                                                <button
+                                                    onClick={() => setEditingCommentId(null)}
+                                                    className="text-gray-600 hover:text-gray-800"
+                                                    title="Cancel"
+                                                >
+                                                    <FaTimes />
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingCommentId(comment._id);
+                                                        setEditedText(comment.text);
+                                                    }}
+                                                    className="text-blue-600 hover:text-blue-800"
+                                                    title="Edit"
+                                                >
+                                                    <FaEdit />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteComment(comment._id)}
+                                                    className="text-red-500 hover:text-red-700"
+                                                    title="Delete"
+                                                >
+                                                    <FaTrash />
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
 
-                            <button
-                                onClick={handleAddComment}
-                                className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-                                >
-                                    POST
+                    {/* Input for new comment */}
+                    <div className="mt-3 flex items-center space-x-2">
+                        <input
+                            type="text"
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="Drop a comment..."
+                            className="flex-1 p-2 border rounded-md"
+                        />
+                        <button
+                            onClick={handleAddComment}
+                            className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                        >
+                            POST
                         </button>
                     </div>
                 </div>
